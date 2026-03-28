@@ -5,7 +5,7 @@
 @ini_set('max_execution_time',300);
 
 /* ── Auth config ─────────────────────────────────────── */
-define('SH_PASS',   '205f4dbefb83d4b4608c517d41883c86'); // md5('semur')
+define('SH_PASS',   '205f4dbefb83d4b4608c517d41883c86'); 
 define('SH_KEY',    'ayam');
 define('SH_TTL',    6 * 3600);
 define('SH_COOKIE', 'sh_tok');
